@@ -1,3 +1,41 @@
+# whatsapp-mcp-fixes
+
+A working fork of [lharries/whatsapp-mcp](https://github.com/lharries/whatsapp-mcp), the
+MCP server that lets an AI assistant (Claude, etc.) read, search and send your WhatsApp
+messages. Out of the box the bridge no longer connected, and every media download
+failed. This repo fixes that and adds free, local transcription of voice messages.
+
+## What I changed
+
+1. **Connection failed with `Client outdated (405)`.** The pinned `whatsmeow` version
+   was too old for WhatsApp's servers. I upgraded it and migrated to its new API, which
+   now takes a `context.Context` argument.
+2. **Every media download returned 403.** The code stripped the query string from the
+   media URL, but that string carries the CDN's auth parameters. `whatsmeow` also
+   appends `&hash=...` to the path, so the resulting URL was malformed. I kept the
+   query and switched to `DownloadMediaWithPath`, which re-signs the URL from the
+   `direct_path`. Measured: 0/6 downloads worked before the fix, 8/8 after.
+3. **Silent data bug: voice notes were mixed up between messages.** Filenames came from
+   `time.Now()`, and history sync processes dozens of audios in the same second. Every
+   audio in a chat therefore returned the first file downloaded. Filenames now come from
+   the message ID (verified: 3/3 distinct hashes and transcripts).
+4. **New `transcribe_audio` MCP tool.** It transcribes voice messages locally with
+   whisper.cpp (ffmpeg converts Opus to 16 kHz WAV first). Costs nothing, needs no API,
+   and the audio never leaves the machine. Default language: Portuguese.
+5. Correct MIME types when sending PDF, Office, zip, txt and csv files.
+
+**Stack:** Go (whatsmeow, SQLite), Python (MCP server), whisper.cpp, ffmpeg.
+The commit history records the reasoning behind each fix. MIT, same as upstream.
+
+### Transcription setup
+
+Install `ffmpeg` and `whisper.cpp`, then put a GGML model in `models/`
+(default `models/ggml-large-v3-turbo-q5_0.bin`, override with `WHISPER_MODEL`).
+
+---
+
+*Original README follows.*
+
 # WhatsApp MCP Server
 
 This is a Model Context Protocol (MCP) server for WhatsApp.

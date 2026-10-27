@@ -10,7 +10,8 @@ import tempfile
 DEFAULT_MODEL = os.path.expanduser(
     os.environ.get(
         "WHISPER_MODEL",
-        "~/Code/whatsapp-mcp/models/ggml-large-v3-turbo-q5_0.bin",
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     "..", "models", "ggml-large-v3-turbo-q5_0.bin"),
     )
 )
 
@@ -23,8 +24,9 @@ def _require(binary: str) -> str:
     path = shutil.which(binary)
     if not path:
         raise RuntimeError(
-            f"'{binary}' não encontrado. Instale com: brew install "
-            f"{'whisper-cpp' if binary.startswith('whisper') else binary}"
+            f"'{binary}' não encontrado. Instale com: sudo apt install "
+            f"{'whisper.cpp' if binary.startswith('whisper') else binary} "
+            f"(macOS: brew install {'whisper-cpp' if binary.startswith('whisper') else binary})"
         )
     return path
 
