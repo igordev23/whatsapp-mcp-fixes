@@ -1,5 +1,7 @@
 # whatsapp-mcp-fixes
 
+[![M8ven Score](https://m8ven.ai/badge/mcp/igordev23-whatsapp-mcp-fixes-dvk9pq?v=b2f4049f41ce70c741ada205355ac97c)](https://m8ven.ai/mcp/igordev23-whatsapp-mcp-fixes-dvk9pq?s=readme)
+
 A working fork of [lharries/whatsapp-mcp](https://github.com/lharries/whatsapp-mcp), the
 MCP server that lets an AI assistant (Claude, etc.) read, search and send your WhatsApp
 messages. Out of the box the bridge no longer connected, and every media download
