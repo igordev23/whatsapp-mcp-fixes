@@ -107,6 +107,35 @@ def db(tmp_path, monkeypatch):
     return path
 
 
+READ_CALLS = [
+    ("search_contacts", {"query": "alice"}),
+    ("list_messages", {"chat_jid": ALICE}),
+    ("list_chats", {}),
+    ("get_chat", {"chat_jid": ALICE}),
+    ("get_chat", {"chat_jid": "missing@s.whatsapp.net"}),
+    ("get_direct_chat_by_contact", {"sender_phone_number": "5511888880000"}),
+    ("get_contact_chats", {"jid": "5511999990000"}),
+    ("get_last_interaction", {"jid": ALICE}),
+    ("get_last_interaction", {"jid": "missing@s.whatsapp.net"}),
+    ("get_message_context", {"message_id": "m2", "before": 1, "after": 1}),
+]
+
+
+@pytest.mark.parametrize("name,args", READ_CALLS)
+def test_read_tool_output_passes_mcp_validation(db, name, args):
+    """Calls go through a real client/server session, so the declared output
+    schema is enforced on both sides (the direct-call tests skip that)."""
+    from mcp.shared.memory import create_connected_server_and_client_session
+
+    async def call():
+        async with create_connected_server_and_client_session(main.mcp._mcp_server) as client:
+            return await client.call_tool(name, args)
+
+    result = asyncio.run(call())
+    assert not result.isError, result.content[0].text
+    assert result.structuredContent is not None
+
+
 def test_search_contacts(db):
     result = main.search_contacts("Alice")
     assert [c.jid for c in result] == [ALICE]

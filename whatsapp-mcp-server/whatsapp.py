@@ -132,7 +132,7 @@ def list_messages(
     include_context: bool = True,
     context_before: int = 1,
     context_after: int = 1
-) -> List[Message]:
+) -> str:
     """Get messages matching the specified criteria with optional context."""
     try:
         conn = sqlite3.connect(MESSAGES_DB_PATH)
@@ -194,7 +194,7 @@ def list_messages(
                 sender=msg[1],
                 chat_name=msg[2],
                 content=msg[3],
-                is_from_me=msg[4],
+                is_from_me=bool(msg[4]),
                 chat_jid=msg[5],
                 id=msg[6],
                 media_type=msg[7]
@@ -217,7 +217,7 @@ def list_messages(
         
     except sqlite3.Error as e:
         print(f"Database error: {e}")
-        return []
+        raise
     finally:
         if 'conn' in locals():
             conn.close()
@@ -250,7 +250,7 @@ def get_message_context(
             sender=msg_data[1],
             chat_name=msg_data[2],
             content=msg_data[3],
-            is_from_me=msg_data[4],
+            is_from_me=bool(msg_data[4]),
             chat_jid=msg_data[5],
             id=msg_data[6],
             media_type=msg_data[8]
@@ -273,7 +273,7 @@ def get_message_context(
                 sender=msg[1],
                 chat_name=msg[2],
                 content=msg[3],
-                is_from_me=msg[4],
+                is_from_me=bool(msg[4]),
                 chat_jid=msg[5],
                 id=msg[6],
                 media_type=msg[7]
@@ -296,7 +296,7 @@ def get_message_context(
                 sender=msg[1],
                 chat_name=msg[2],
                 content=msg[3],
-                is_from_me=msg[4],
+                is_from_me=bool(msg[4]),
                 chat_jid=msg[5],
                 id=msg[6],
                 media_type=msg[7]
@@ -376,7 +376,7 @@ def list_chats(
                 last_message_time=datetime.fromisoformat(chat_data[2]) if chat_data[2] else None,
                 last_message=chat_data[3],
                 last_sender=chat_data[4],
-                last_is_from_me=chat_data[5]
+                last_is_from_me=None if chat_data[5] is None else bool(chat_data[5])
             )
             result.append(chat)
             
@@ -469,7 +469,7 @@ def get_contact_chats(jid: str, limit: int = 20, page: int = 0) -> List[Chat]:
                 last_message_time=datetime.fromisoformat(chat_data[2]) if chat_data[2] else None,
                 last_message=chat_data[3],
                 last_sender=chat_data[4],
-                last_is_from_me=chat_data[5]
+                last_is_from_me=None if chat_data[5] is None else bool(chat_data[5])
             )
             result.append(chat)
             
@@ -516,7 +516,7 @@ def get_last_interaction(jid: str) -> str:
             sender=msg_data[1],
             chat_name=msg_data[2],
             content=msg_data[3],
-            is_from_me=msg_data[4],
+            is_from_me=bool(msg_data[4]),
             chat_jid=msg_data[5],
             id=msg_data[6],
             media_type=msg_data[7]
@@ -569,7 +569,7 @@ def get_chat(chat_jid: str, include_last_message: bool = True) -> Optional[Chat]
             last_message_time=datetime.fromisoformat(chat_data[2]) if chat_data[2] else None,
             last_message=chat_data[3],
             last_sender=chat_data[4],
-            last_is_from_me=chat_data[5]
+            last_is_from_me=None if chat_data[5] is None else bool(chat_data[5])
         )
         
     except sqlite3.Error as e:
@@ -612,7 +612,7 @@ def get_direct_chat_by_contact(sender_phone_number: str) -> Optional[Chat]:
             last_message_time=datetime.fromisoformat(chat_data[2]) if chat_data[2] else None,
             last_message=chat_data[3],
             last_sender=chat_data[4],
-            last_is_from_me=chat_data[5]
+            last_is_from_me=None if chat_data[5] is None else bool(chat_data[5])
         )
         
     except sqlite3.Error as e:
