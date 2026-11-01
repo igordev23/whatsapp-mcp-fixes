@@ -1,6 +1,7 @@
 # whatsapp-mcp-fixes
 
 [![M8ven Score](https://m8ven.ai/badge/mcp/igordev23-whatsapp-mcp-fixes-dvk9pq?v=b2f4049f41ce70c741ada205355ac97c)](https://m8ven.ai/mcp/igordev23-whatsapp-mcp-fixes-dvk9pq?s=readme)
+[![tests](https://github.com/igordev23/whatsapp-mcp-fixes/actions/workflows/tests.yml/badge.svg)](https://github.com/igordev23/whatsapp-mcp-fixes/actions/workflows/tests.yml)
 
 A working fork of [lharries/whatsapp-mcp](https://github.com/lharries/whatsapp-mcp), the
 MCP server that lets an AI assistant (Claude, etc.) read, search and send your WhatsApp
@@ -33,6 +34,14 @@ The commit history records the reasoning behind each fix. MIT, same as upstream.
 
 Install `ffmpeg` and `whisper.cpp`, then put a GGML model in `models/`
 (default `models/ggml-large-v3-turbo-q5_0.bin`, override with `WHISPER_MODEL`).
+
+### Tests
+
+The tests cover all 13 MCP tools and need no WhatsApp, ffmpeg or whisper:
+
+```bash
+cd whatsapp-mcp-server && uv run pytest
+```
 
 ---
 
